@@ -3,7 +3,7 @@ module.exports = {
         './src/index'
     ],
     output: {
-        filename: './lib/stuff.js'
+        filename: './lib/index.js'
     },
     module: {
         loaders: [
