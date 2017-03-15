@@ -1,15 +1,19 @@
-import React, { Component } from 'react';
+import React, {Component, PropTypes} from 'react';
 import {range} from 'lodash';
-import {BLACK} from 'godash';
+import go from 'godash';
 
 function Stone(props) {
-    const fill = props.color === BLACK ? '#333' : '#fff';
-    return <circle cx={props.x} cy={props.y} r={props.radius} fill={fill} filter="url(#shadow)" />;
+    const {color, radius, x, y} = props;
+    const fill = color === go.BLACK ? '#333' : '#fff';
+
+    console.log(props);
+
+    return <circle cx={x} cy={y} r={radius} fill={fill} filter="url(#shadow)" />;
 }
 
 export class Goban extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.viewBox = 500;
         this.boardMargin = 5;
@@ -17,17 +21,17 @@ export class Goban extends Component {
         this.totalMargin = this.boardPadding + this.boardMargin;
         this.boardSize = this.viewBox - 2 * this.totalMargin;
 
-        this.dimensions = 9; // get this from props
+        this.dimensions = props.board.dimensions;
         this.cellSize = this.boardSize / this.dimensions;
         this.startPoint = this.totalMargin + this.cellSize / 2;
         this.stoneSize = this.cellSize / 2 - 3;
     }
 
-    boardToSVG(x, y) {
-        return [
-            this.startPoint + x * this.cellSize,
-            this.startPoint + y * this.cellSize,
-        ];
+    boardToSVG(coordinate) {
+        return {
+            x: this.startPoint + coordinate.x * this.cellSize,
+            y: this.startPoint + coordinate.y * this.cellSize,
+        };
     }
 
     svgToBoard(x, y) {
@@ -36,11 +40,6 @@ export class Goban extends Component {
 
     render() {
         const svgViewBox = `0 0 ${this.viewBox} ${this.viewBox}`;
-
-        const [x, y] = this.boardToSVG(3, 4);
-        const [x1, y1] = this.boardToSVG(2, 4);
-        const [x2, y2] = this.boardToSVG(3, 5);
-        const [x3, y3] = this.boardToSVG(2, 5);
 
         return (
             <div className="App">
@@ -66,12 +65,20 @@ export class Goban extends Component {
                             x1={this.startPoint} x2={this.startPoint + this.boardSize - this.cellSize} stroke="#999"/>
                     )}
 
-                    <Stone x={x} y={y} radius={this.stoneSize} />
-                    <Stone x={x1} y={y1} radius={this.stoneSize} />
-                    <Stone x={x2} y={y2} radius={this.stoneSize} color="black" />
-                    <Stone x={x3} y={y3} radius={this.stoneSize} />
+                    {this.props.board.moves.map(
+                        (color, coordinate) => <Stone color={color} {...this.boardToSVG(coordinate)} radius={this.stoneSize} key={'x:' + coordinate.x + ',y:' + coordinate.y}/>
+                    ).valueSeq()}
                 </svg>
             </div>
         );
     }
+}
+
+Goban.propTypes = {
+    board: PropTypes.object.isRequired,
+    onCoordinateClick: PropTypes.func,
+}
+
+Goban.defaultProps = {
+    onCoordinateClick: () => {},
 }
