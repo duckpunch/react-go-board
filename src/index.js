@@ -51,8 +51,6 @@ export class Goban extends Component {
                         </filter>
                     </defs>
 
-                    <rect x="0" y="0" width="500" height="500" stroke="#000" fill="none"/>
-
                     <rect x={this.boardMargin} y={this.boardMargin} fill="#eee" filter="url(#shadow)"
                         width={this.viewBox - this.boardMargin * 2} height={this.viewBox - this.boardMargin * 2}/>
 
