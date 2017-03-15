@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Blah from './index';
+import {Goban} from './index';
 
 ReactDOM.render(
-    <Blah />,
+    <Goban />,
     document.getElementById('root')
 );
