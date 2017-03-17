@@ -9,6 +9,6 @@ const board = new go.Board(19,
 );
 
 ReactDOM.render(
-    <Goban board={board}/>,
+    <Goban board={board} onCoordinateClick={c => console.log(c.toString())}/>,
     document.getElementById('root')
 );

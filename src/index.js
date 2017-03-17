@@ -1,12 +1,10 @@
 import React, {Component, PropTypes} from 'react';
-import {range} from 'lodash';
+import {inRange, range, round} from 'lodash';
 import go from 'godash';
 
 function Stone(props) {
     const {color, radius, x, y} = props;
     const fill = color === go.BLACK ? '#333' : '#fff';
-
-    console.log(props);
 
     return <circle cx={x} cy={y} r={radius} fill={fill} filter="url(#shadow)" />;
 }
@@ -35,41 +33,62 @@ export class Goban extends Component {
     }
 
     svgToBoard(x, y) {
-        // derp
+        const coordinate = new go.Coordinate(
+            round((x - this.startPoint) / this.cellSize),
+            round((y - this.startPoint) / this.cellSize),
+        );
+
+        if (inRange(coordinate.x, 0, this.props.board.dimensions) &&
+            inRange(coordinate.y, 0, this.props.board.dimensions)) {
+            return coordinate;
+        }
+
+    }
+
+    handleClick(event) {
+        // Project points to SVG space
+        const svgElement = event.currentTarget;
+        const screenPoint = svgElement.createSVGPoint()
+        screenPoint.x = event.clientX;
+        screenPoint.y = event.clientY;
+        const svgPoint = screenPoint.matrixTransform(svgElement.getScreenCTM().inverse());
+
+        const coordinate = this.svgToBoard(svgPoint.x, svgPoint.y);
+        if (this.props.onCoordinateClick && coordinate) {
+            this.props.onCoordinateClick(coordinate);
+        }
     }
 
     render() {
         const svgViewBox = `0 0 ${this.viewBox} ${this.viewBox}`;
 
         return (
-            <div className="App">
-                <svg viewBox={svgViewBox}>
-                    <defs>
-                        <filter id="shadow">
-                            <feDropShadow dx="0.5" dy="0.5" stdDeviation="1" floodColor="#666"/>
-                        </filter>
-                    </defs>
+            <svg viewBox={svgViewBox} onClick={this.handleClick.bind(this)}>
+                <defs>
+                    <filter id="shadow">
+                        <feDropShadow dx="0.5" dy="0.5" stdDeviation="1" floodColor="#666"/>
+                    </filter>
+                </defs>
 
-                    <rect x={this.boardMargin} y={this.boardMargin} fill="#eee" filter="url(#shadow)"
-                        width={this.viewBox - this.boardMargin * 2} height={this.viewBox - this.boardMargin * 2}/>
+                <rect x={this.boardMargin} y={this.boardMargin} fill="#eee" filter="url(#shadow)"
+                    width={this.viewBox - this.boardMargin * 2} height={this.viewBox - this.boardMargin * 2}/>
 
-                    {range(this.dimensions).map(index =>
-                        <line key={'x' + index}
-                            x1={this.startPoint + index * this.cellSize} x2={this.startPoint + index * this.cellSize}
-                            y1={this.startPoint} y2={this.startPoint + this.boardSize - this.cellSize} stroke="#999"/>
-                    )}
+                {range(this.dimensions).map(index =>
+                    <line key={'x' + index}
+                        x1={this.startPoint + index * this.cellSize} x2={this.startPoint + index * this.cellSize}
+                        y1={this.startPoint} y2={this.startPoint + this.boardSize - this.cellSize} stroke="#999"/>
+                )}
 
-                    {range(this.dimensions).map(index =>
-                        <line key={'y' + index}
-                            y1={this.startPoint + index * this.cellSize} y2={this.startPoint + index * this.cellSize}
-                            x1={this.startPoint} x2={this.startPoint + this.boardSize - this.cellSize} stroke="#999"/>
-                    )}
+                {range(this.dimensions).map(index =>
+                    <line key={'y' + index}
+                        y1={this.startPoint + index * this.cellSize} y2={this.startPoint + index * this.cellSize}
+                        x1={this.startPoint} x2={this.startPoint + this.boardSize - this.cellSize} stroke="#999"/>
+                )}
 
-                    {this.props.board.moves.map(
-                        (color, coordinate) => <Stone color={color} {...this.boardToSVG(coordinate)} radius={this.stoneSize} key={'x:' + coordinate.x + ',y:' + coordinate.y}/>
-                    ).valueSeq()}
-                </svg>
-            </div>
+                {this.props.board.moves.map(
+                    (color, coordinate) => <Stone color={color} {...this.boardToSVG(coordinate)} radius={this.stoneSize} key={'x:' + coordinate.x + ',y:' + coordinate.y}/>
+                ).valueSeq()}
+            </svg>
         );
     }
 }
@@ -77,8 +96,4 @@ export class Goban extends Component {
 Goban.propTypes = {
     board: PropTypes.object.isRequired,
     onCoordinateClick: PropTypes.func,
-}
-
-Goban.defaultProps = {
-    onCoordinateClick: () => {},
 }
