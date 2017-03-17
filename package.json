@@ -1,15 +1,27 @@
 {
   "name": "react-go-board",
   "version": "0.1.0",
-  "description": "",
+  "description": "React go board to render a godash Board",
   "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/duckpunch/react-go-board.git"
+  },
+  "keywords": [
+    "go",
+    "weiqi",
+    "baduk"
+  ],
+  "author": {
+    "name": "duckpunch",
+    "url": "https://github.com/duckpunch"
+  },
   "scripts": {
     "clean": "rm -rf ./lib",
     "prepublish": "npm run clean; webpack",
     "start": "webpack-dev-server --inline --hot --debug --config webpack.config.dev.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "godash": "^1.0.3",
