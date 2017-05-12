@@ -18,7 +18,8 @@
   },
   "scripts": {
     "clean": "rm -rf ./lib",
-    "prepublish": "npm run clean; webpack",
+    "build": "webpack",
+    "prepublish": "npm run clean; npm run build",
     "start": "webpack-dev-server --inline --hot --debug --config webpack.config.dev.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
