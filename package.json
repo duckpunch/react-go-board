@@ -1,6 +1,6 @@
 {
   "name": "react-go-board",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "React go board to render a godash Board",
   "main": "lib/index.js",
   "repository": {
