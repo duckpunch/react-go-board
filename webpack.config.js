@@ -1,5 +1,3 @@
-const path = require('path');
-
 module.exports = {
     entry: [
         './src/index'
@@ -7,7 +5,7 @@ module.exports = {
     output: {
         library: 'react-go-board',
         libraryTarget: 'umd',
-        filename: path.join(__dirname, './lib/index.js')
+        filename: './lib/index.js'
     },
     module: {
         loaders: [
