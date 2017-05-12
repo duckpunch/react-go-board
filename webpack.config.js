@@ -3,7 +3,9 @@ module.exports = {
         './src/index'
     ],
     output: {
-        filename: './lib/index.js'
+        library: 'react-go-board',
+        libraryTarget: 'umd',
+        filename: path.join(__dirname, './lib/index.js')
     },
     module: {
         loaders: [
