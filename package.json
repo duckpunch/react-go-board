@@ -21,7 +21,8 @@
     "build": "webpack",
     "prepublish": "npm run clean; npm run build",
     "start": "webpack-dev-server --inline --hot --debug --config webpack.config.dev.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch --debug --progress"
   },
   "license": "ISC",
   "dependencies": {
