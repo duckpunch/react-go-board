@@ -76,6 +76,7 @@ export class Goban extends Component {
 
     render() {
         const svgViewBox = `0 0 ${this.viewBox} ${this.viewBox}`;
+        const boardColor = this.props.boardColor || '#fff';
 
         return (
             <svg viewBox={svgViewBox} onClick={this.handleClick.bind(this)}>
@@ -85,7 +86,7 @@ export class Goban extends Component {
                     </filter>
                 </defs>
 
-                <rect x={this.boardMargin} y={this.boardMargin} fill='#eee' filter='url(#shadow)'
+                <rect x={this.boardMargin} y={this.boardMargin} fill={boardColor} filter='url(#shadow)'
                     width={this.viewBox - this.boardMargin * 2} height={this.viewBox - this.boardMargin * 2}/>
 
                 {range(this.dimensions).map(index =>
@@ -116,4 +117,5 @@ Goban.propTypes = {
     board: PropTypes.object.isRequired,
     onCoordinateClick: PropTypes.func,
     annotations: PropTypes.array,
+    boardColor: PropTypes.string,
 }
