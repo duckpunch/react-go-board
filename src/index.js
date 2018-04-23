@@ -3,6 +3,11 @@ import PropTypes from 'prop-types';
 import {inRange, range, round} from 'lodash';
 import go from 'godash';
 
+function StarPoint(props) {
+    const {radius, x, y} = props;
+    return <circle cx={x} cy={y} r={radius} fill='#333' />
+}
+
 function Stone(props) {
     const {color, radius, x, y} = props;
     const fill = color === go.BLACK ? '#333' : '#fff';
@@ -78,6 +83,18 @@ export class Goban extends Component {
         const svgViewBox = `0 0 ${this.viewBox} ${this.viewBox}`;
         const boardColor = this.props.boardColor || '#fff';
 
+        const starPoints = this.dimensions === 19 ? [
+            new go.Coordinate(3, 3),
+            new go.Coordinate(9, 3),
+            new go.Coordinate(15, 3),
+            new go.Coordinate(3, 9),
+            new go.Coordinate(9, 9),
+            new go.Coordinate(15, 9),
+            new go.Coordinate(3, 15),
+            new go.Coordinate(9, 15),
+            new go.Coordinate(15, 15),
+        ] : [];
+
         return (
             <svg viewBox={svgViewBox} onClick={this.handleClick.bind(this)}>
                 <defs>
@@ -99,6 +116,11 @@ export class Goban extends Component {
                     <line key={'y' + index}
                         y1={this.startPoint + index * this.cellSize} y2={this.startPoint + index * this.cellSize}
                         x1={this.startPoint} x2={this.startPoint + this.boardSize - this.cellSize} stroke='#999'/>
+                )}
+
+                {starPoints.map(
+                    coordinate => <StarPoint {...this.boardToSVG(coordinate)}
+                        radius={this.stoneSize / 4} key={'x:' + coordinate.x + ',y:' + coordinate.y} />
                 )}
 
                 {this.props.board.moves.map(
