@@ -19,11 +19,11 @@ function handleCoordinateClick(coordinate) {
 
 export default function RenderMe() {
     const board = new godash.Board(19);
-    const annotations = [new Coordinate(2, 2)];
+    const annotations = [new godash.Coordinate(2, 2)];
     return <Goban
         board={board}
         boardColor='#efefef'
-        annotation={annotations}
+        annotations={annotations}
         onCoordinateClick={handleCoordinateClick} />;
 }
 ```
