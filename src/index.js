@@ -114,6 +114,7 @@ export class Goban extends Component {
                 {this.props.highlights && flatten(toPairs(this.props.highlights).map(
                     ([color, coordinates]) => coordinates.map(coordinate =>
                         <Highlight {...this.boardToSVG(coordinate)}
+                            key={`x,y,color:${coordinate.x},${coordinate.y},${color}`}
                             color={color} cellSize={this.cellSize}/>
                     )
                 ))}
