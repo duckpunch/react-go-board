@@ -1,15 +1,13 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {inRange, range, round} from 'lodash';
+import {flatten, inRange, range, round, toPairs} from 'lodash';
 import go from 'godash';
 
-function StarPoint(props) {
-    const {radius, x, y} = props;
+function StarPoint({radius, x, y}) {
     return <circle cx={x} cy={y} r={radius} fill='#333' />
 }
 
-function Stone(props) {
-    const {color, radius, x, y} = props;
+function Stone({color, radius, x, y}) {
     const fill = color === go.BLACK ? '#333' : '#fff';
 
     return <circle cx={x} cy={y} r={radius} fill={fill} filter='url(#shadow)' />;
@@ -25,7 +23,14 @@ function Annotation({radius, x, y}) {
         [x + dx, y + dy].join(','),
     ].join(' ');
 
-    return <polygon stroke='#999' points={points} fillOpacity={0}/>;
+    return <polygon stroke='#999' points={points} fillOpacity={0} />;
+}
+
+function Highlight({x, y, color, cellSize}) {
+    console.log(x, y, color);
+    const offset = cellSize / 2;
+    return <rect x={x - offset} y={y - offset} fill={color}
+        width={cellSize} height={cellSize}/>;
 }
 
 export class Goban extends Component {
@@ -106,6 +111,13 @@ export class Goban extends Component {
                 <rect x={this.boardMargin} y={this.boardMargin} fill={boardColor} filter='url(#shadow)'
                     width={this.viewBox - this.boardMargin * 2} height={this.viewBox - this.boardMargin * 2}/>
 
+                {this.props.highlights && flatten(toPairs(this.props.highlights).map(
+                    ([color, coordinates]) => coordinates.map(coordinate =>
+                        <Highlight {...this.boardToSVG(coordinate)}
+                            color={color} cellSize={this.cellSize}/>
+                    )
+                ))}
+
                 {range(this.dimensions).map(index =>
                     <line key={'x' + index}
                         x1={this.startPoint + index * this.cellSize} x2={this.startPoint + index * this.cellSize}
@@ -140,4 +152,10 @@ Goban.propTypes = {
     onCoordinateClick: PropTypes.func,
     annotations: PropTypes.array,
     boardColor: PropTypes.string,
+    highlights: PropTypes.objectOf(
+        PropTypes.arrayOf(PropTypes.shape({
+            x: PropTypes.number,
+            y: PropTypes.number,
+        })),
+    ),
 }
