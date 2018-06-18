@@ -27,7 +27,6 @@ function Annotation({radius, x, y}) {
 }
 
 function Highlight({x, y, color, cellSize}) {
-    console.log(x, y, color);
     const offset = cellSize / 2;
     return <rect x={x - offset} y={y - offset} fill={color}
         width={cellSize} height={cellSize}/>;
