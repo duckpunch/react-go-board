@@ -15,9 +15,12 @@ const highlights = {
         {x: 7, y: 4},
     ],
 }
+const topLeft = {x: 2, y: 4};
+const bottomRight = {x: 5, y: 9};
 
 ReactDOM.render(
     <Goban board={board} highlights={highlights}
+        topLeft={topLeft} bottomRight={bottomRight}
         onCoordinateClick={c => console.log(c.toString())}/>,
     document.getElementById('root')
 );

@@ -83,8 +83,46 @@ export class Goban extends Component {
         }
     }
 
+    getSvgViewBox() {
+        const lastIndex = this.dimensions - 1;
+        const extra = this.boardMargin + this.boardPadding;
+        const topLeft = this.props.topLeft === undefined ? {x: 0, y: 0} : this.props.topLeft;
+        const bottomRight = this.props.bottomRight === undefined ? {
+            x: lastIndex,
+            y: lastIndex,
+        } : this.props.bottomRight;
+
+        let x, y, width, height;
+
+        width = (bottomRight.x - topLeft.x + 1) * this.cellSize;
+        height = (bottomRight.y - topLeft.y + 1) * this.cellSize;
+        if (bottomRight.x === lastIndex) {
+            width += extra;
+        }
+
+        if (bottomRight.y === lastIndex) {
+            height += extra;
+        }
+
+        if (topLeft.x === 0) {
+            x = 0;
+            width += extra;
+        } else {
+            x = extra + topLeft.x * this.cellSize;
+        }
+
+        if (topLeft.y === 0) {
+            y = 0;
+            height += extra;
+        } else {
+            y = extra + topLeft.y * this.cellSize;
+        }
+
+        return `${x} ${y} ${width} ${height}`;
+    }
+
     render() {
-        const svgViewBox = `0 0 ${this.viewBox} ${this.viewBox}`;
+        const svgViewBox = this.getSvgViewBox();
         const boardColor = this.props.boardColor || '#fff';
 
         const starPoints = this.dimensions === 19 ? [
@@ -158,4 +196,12 @@ Goban.propTypes = {
             y: PropTypes.number,
         })),
     ),
+    topLeft: PropTypes.shape({
+        x: PropTypes.number,
+        y: PropTypes.number,
+    }),
+    bottomRight: PropTypes.shape({
+        x: PropTypes.number,
+        y: PropTypes.number,
+    }),
 }
