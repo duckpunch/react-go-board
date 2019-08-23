@@ -45,8 +45,6 @@ export class Goban extends Component {
         this.dimensions = props.board.dimensions;
         this.cellSize = this.boardSize / this.dimensions;
         this.startPoint = this.totalMargin + this.cellSize / 2;
-        this.stoneSize = this.cellSize / 2 - 3;
-        this.annotationSize = this.stoneSize * 0.8;
     }
 
     boardToSVG(coordinate) {
@@ -137,6 +135,12 @@ export class Goban extends Component {
             new go.Coordinate(15, 15),
         ] : [];
 
+        const options = this.props.options || {};
+
+        const stonePadding = options.stonePadding || 6;
+        const stoneSize = this.cellSize / 2 - stonePadding / 2;
+        const annotationSize = stoneSize * 0.8;
+
         return (
             <svg viewBox={svgViewBox} onClick={this.handleClick.bind(this)}>
                 <defs>
@@ -170,15 +174,15 @@ export class Goban extends Component {
 
                 {starPoints.map(
                     coordinate => <StarPoint {...this.boardToSVG(coordinate)}
-                        radius={this.stoneSize / 4} key={'x:' + coordinate.x + ',y:' + coordinate.y} />
+                        radius={stoneSize / 4} key={'x:' + coordinate.x + ',y:' + coordinate.y} />
                 )}
 
                 {this.props.board.moves.map(
-                    (color, coordinate) => <Stone color={color} {...this.boardToSVG(coordinate)} radius={this.stoneSize} key={'x:' + coordinate.x + ',y:' + coordinate.y}/>
+                    (color, coordinate) => <Stone color={color} {...this.boardToSVG(coordinate)} radius={stoneSize} key={'x:' + coordinate.x + ',y:' + coordinate.y}/>
                 ).valueSeq()}
 
                 {this.props.annotations && this.props.annotations.map(
-                    (coordinate, index) => <Annotation key={'annotation' + index} {...this.boardToSVG(coordinate)} radius={this.annotationSize}/>
+                    (coordinate, index) => <Annotation key={'annotation' + index} {...this.boardToSVG(coordinate)} radius={annotationSize}/>
                 )}
             </svg>
         );
@@ -203,5 +207,8 @@ Goban.propTypes = {
     bottomRight: PropTypes.shape({
         x: PropTypes.number,
         y: PropTypes.number,
+    }),
+    options: PropTypes.shape({
+        stonePadding: PropTypes.number,
     }),
 }

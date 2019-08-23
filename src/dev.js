@@ -6,6 +6,7 @@ import go from 'godash';
 
 const board = new go.Board(19,
     new go.Coordinate(3, 4), go.BLACK,
+    new go.Coordinate(4, 4), go.BLACK,
 );
 const highlights = {
     '#0ff': [{x: 4, y: 4}],
