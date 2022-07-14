@@ -36,14 +36,20 @@ export class Goban extends Component {
     constructor(props) {
         super(props);
 
-        this.viewBox = 500;
-        this.boardMargin = 5;
-        this.boardPadding = 5;
-        this.totalMargin = this.boardPadding + this.boardMargin;
-        this.boardSize = this.viewBox - 2 * this.totalMargin;
-
         this.dimensions = props.board.dimensions;
+
+        this.viewBox = 500;
+
+        this.showCoordinates = props.options.showCoordinates && this.dimensions <= 25;
+        this.coordinatesSize = this.showCoordinates ? this.viewBox / this.dimensions / 3 : 0;
+
+        this.boardMargin = 5;
+        this.boardPadding = 5 + this.coordinatesSize;
+        this.totalMargin = this.boardPadding + this.boardMargin;
+
+        this.boardSize = this.viewBox - 2 * this.totalMargin;
         this.cellSize = this.boardSize / this.dimensions;
+
         this.startPoint = this.totalMargin + this.cellSize / 2;
     }
 
@@ -83,7 +89,7 @@ export class Goban extends Component {
 
     getSvgViewBox() {
         const lastIndex = this.dimensions - 1;
-        const extra = this.boardMargin + this.boardPadding;
+        const extra = this.totalMargin;
         const topLeft = this.props.topLeft === undefined ? {x: 0, y: 0} : this.props.topLeft;
         const bottomRight = this.props.bottomRight === undefined ? {
             x: lastIndex,
@@ -140,18 +146,61 @@ export class Goban extends Component {
         const stonePadding = options.stonePadding || 6;
         const stoneSize = this.cellSize / 2 - stonePadding / 2;
         const annotationSize = stoneSize * 0.8;
+        const coordinateLetters = "ABCDEFGHJKLMNOPQRSTUVWXYZ"
 
         return (
             <svg viewBox={svgViewBox} onClick={this.handleClick.bind(this)}>
                 <defs>
+                    <style>
+                        {`
+                        .coordinates {
+                            font: bold ${this.coordinatesSize}px sans-serif;
+                            dominant-baseline: central;
+                            text-anchor: middle;
+                        }
+                        `}
+                    </style>
                     <filter id='shadow'>
                         <feDropShadow dx='0.5' dy='0.5' stdDeviation='1' floodColor='#666'/>
                     </filter>
                 </defs>
 
+                // Board
                 <rect x={this.boardMargin} y={this.boardMargin} fill={boardColor} filter='url(#shadow)'
                     width={this.viewBox - this.boardMargin * 2} height={this.viewBox - this.boardMargin * 2}/>
 
+                // Coordinates
+                {this.showCoordinates && range(this.dimensions).map(index =>
+                    <text key={'c_left' + index} className="coordinates"
+                        x={this.totalMargin - this.coordinatesSize / 2}
+                        y={this.startPoint + index * this.cellSize}>
+                            {index + 1}
+                    </text>
+                )}
+                {this.showCoordinates && range(this.dimensions).map(index =>
+                    <text key={'c_right' + index} className="coordinates"
+                        x={this.viewBox - this.totalMargin + this.coordinatesSize / 2}
+                        y={this.startPoint + index * this.cellSize}>
+                            {index + 1}
+                    </text>
+                )}
+
+                {this.showCoordinates && range(this.dimensions).map(index =>
+                    <text key={'c_top' + index} className="coordinates"
+                        x={this.startPoint + index * this.cellSize}
+                        y={this.totalMargin - this.coordinatesSize / 2}>
+                            {coordinateLetters[index]}
+                    </text>
+                )}
+                {this.showCoordinates && range(this.dimensions).map(index =>
+                    <text key={'c_bottom' + index} className="coordinates"
+                        x={this.startPoint + index * this.cellSize}
+                        y={this.viewBox - this.totalMargin + this.coordinatesSize / 2}>
+                            {coordinateLetters[index]}
+                    </text>
+                )}
+
+                // Highlights
                 {this.props.highlights && flatten(toPairs(this.props.highlights).map(
                     ([color, coordinates]) => coordinates.map(coordinate =>
                         <Highlight {...this.boardToSVG(coordinate)}
@@ -160,27 +209,30 @@ export class Goban extends Component {
                     )
                 ))}
 
+                // Grid
                 {range(this.dimensions).map(index =>
                     <line key={'x' + index}
                         x1={this.startPoint + index * this.cellSize} x2={this.startPoint + index * this.cellSize}
                         y1={this.startPoint} y2={this.startPoint + this.boardSize - this.cellSize} stroke='#999'/>
                 )}
-
                 {range(this.dimensions).map(index =>
                     <line key={'y' + index}
                         y1={this.startPoint + index * this.cellSize} y2={this.startPoint + index * this.cellSize}
                         x1={this.startPoint} x2={this.startPoint + this.boardSize - this.cellSize} stroke='#999'/>
                 )}
 
+                // Star points
                 {starPoints.map(
                     coordinate => <StarPoint {...this.boardToSVG(coordinate)}
                         radius={stoneSize / 4} key={'x:' + coordinate.x + ',y:' + coordinate.y} />
                 )}
 
+                // Stones
                 {this.props.board.moves.map(
                     (color, coordinate) => <Stone color={color} {...this.boardToSVG(coordinate)} radius={stoneSize} key={'x:' + coordinate.x + ',y:' + coordinate.y}/>
                 ).valueSeq()}
 
+                // Annotations
                 {this.props.annotations && this.props.annotations.map(
                     (coordinate, index) => <Annotation key={'annotation' + index} {...this.boardToSVG(coordinate)} radius={annotationSize}/>
                 )}
@@ -210,5 +262,6 @@ Goban.propTypes = {
     }),
     options: PropTypes.shape({
         stonePadding: PropTypes.number,
+        showCoordinates: PropTypes.bool,
     }),
 }
