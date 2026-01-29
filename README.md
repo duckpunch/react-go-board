@@ -1,3 +1,9 @@
+> [!IMPORTANT]
+> Archiving - I'm no longer doing development on this.
+>
+> If you want diagrams, look into [duckpunch/godash-diagrams][godash-diagrams].
+> While not a drop-in replacement, useful for some cases.
+
 # React Go Board
 
 A simple SVG board in the form of a [React][react] component to render a
@@ -36,3 +42,4 @@ export default function RenderMe() {
 [react]: https://github.com/facebook/react
 [godash]: https://github.com/duckpunch/godash
 [board]: http://duckpunch.github.io/godash/documentation/#board_1
+[godash-diagrams]: https://github.com/duckpunch/godash-diagrams/
